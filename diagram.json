@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "author": "Anonymous maker",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 0.6, "left": -0.6, "attrs": {} },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn1",
+      "top": -76.9,
+      "left": 166.7,
+      "rotate": 90,
+      "attrs": { "color": "black", "bounce": "0" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led1",
+      "top": -109.2,
+      "left": 99.8,
+      "attrs": { "color": "green" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led2",
+      "top": -109.2,
+      "left": 61.4,
+      "attrs": { "color": "yellow" }
+    },
+    { "type": "wokwi-led", "id": "led3", "top": -109.2, "left": 23, "attrs": { "color": "red" } }
+  ],
+  "connections": [
+    [ "led1:A", "uno:11", "red", [ "v9.6", "h19.2" ] ],
+    [ "led2:A", "uno:12", "red", [ "v19.2", "h48" ] ],
+    [ "led3:A", "uno:13", "red", [ "v28.8", "h76.8" ] ],
+    [ "led3:C", "uno:GND.1", "black", [ "v57.6", "h77.2" ] ],
+    [ "led2:C", "uno:GND.1", "black", [ "v57.6", "h10" ] ],
+    [ "led1:C", "uno:GND.1", "black", [ "v0" ] ],
+    [ "btn1:2.r", "uno:8", "black", [ "v9.8", "h-19.4" ] ],
+    [ "btn1:1.l", "uno:GND.3", "green", [ "v-19.2", "h96", "v336", "h-134.4" ] ]
+  ],
+  "dependencies": {}
+}

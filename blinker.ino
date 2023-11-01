@@ -1,3 +1,5 @@
+#include "Pin.hpp"
+
 #define OUT_GREEN 11
 #define OUT_YELLOW 12
 #define OUT_RED 13
@@ -6,8 +8,9 @@
 
 #define BLINK_TIME 125
 
+DigitalPin button(IN_BUTTON, DigitalPin::Mode::InputPullUp);
+
 void setup() {
-  pinMode(IN_BUTTON, INPUT_PULLUP);
   pinMode(OUT_GREEN, OUTPUT);
   pinMode(OUT_YELLOW, OUTPUT);
   pinMode(OUT_RED, OUTPUT);
@@ -41,9 +44,9 @@ bool isOnR = true;
 
 void loop() {
   timeMs = millis();
-  bool button = (bool) !digitalRead(IN_BUTTON);
-  isChanged = isPressed != button;
-  isPressed = button;
+  bool state = (bool) !button.read();
+  isChanged = isPressed != state;
+  isPressed = state;
 
   if (isChanged && isPressed){
     mode = (mode + 1) % 4;
@@ -94,3 +97,4 @@ void loop() {
     switchTimeY = 2000;
   }
 }
+

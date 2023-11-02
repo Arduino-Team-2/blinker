@@ -1,5 +1,6 @@
-#include "Pin.hpp"
-#include "LED.hpp"
+#include "PinLib/Pin.hpp"
+#include "PinLib/LED.hpp"
+#include "PinLib/Button.hpp"
 
 #define OUT_GREEN 11
 #define OUT_YELLOW 12
@@ -9,7 +10,7 @@
 
 #define BLINK_TIME 125
 
-DigitalPin button(IN_BUTTON, DigitalPin::Mode::InputPullUp);
+PushButton button(IN_BUTTON);
 DigitalLED green(OUT_GREEN);
 DigitalLED yellow(OUT_YELLOW);
 DigitalLED red(OUT_RED);
@@ -44,11 +45,9 @@ bool isOnR = true;
 
 void loop() {
   timeMs = millis();
-  bool state = (bool) !button.read();
-  isChanged = isPressed != state;
-  isPressed = state;
+  button.update();
 
-  if (isChanged && isPressed){
+  if (button.isPressed()){
     mode = (mode + 1) % 4;
     lastSwitchY = 0;
     lastSwitchR = 0;

@@ -1,4 +1,5 @@
 #include "Pin.hpp"
+#include "LED.hpp"
 
 #define OUT_GREEN 11
 #define OUT_YELLOW 12
@@ -9,12 +10,11 @@
 #define BLINK_TIME 125
 
 DigitalPin button(IN_BUTTON, DigitalPin::Mode::InputPullUp);
+DigitalLED green(OUT_GREEN);
+DigitalLED yellow(OUT_YELLOW);
+DigitalLED red(OUT_RED);
 
 void setup() {
-  pinMode(OUT_GREEN, OUTPUT);
-  pinMode(OUT_YELLOW, OUTPUT);
-  pinMode(OUT_RED, OUTPUT);
-
   Serial.begin(9600);
 }
 
@@ -72,29 +72,30 @@ void loop() {
   }
 
   if (mode == G_ON) {
-    digitalWrite(OUT_GREEN, 1);
-    digitalWrite(OUT_YELLOW, 0);
-    digitalWrite(OUT_RED, 0);
+    green.turnOn();
+    yellow.turnOff();
+    red.turnOff();
     switchTimeR = 10000;
     switchTimeY = 10000;
   } else if (mode == RY_SYM_1) {
-    digitalWrite(OUT_GREEN, 0);
-    digitalWrite(OUT_YELLOW, !isOnY && isBlinkOn);
-    digitalWrite(OUT_RED, !isOnR && isBlinkOn);
+    green.turnOff();
+    yellow.setOn(!isOnY && isBlinkOn);
+    red.setOn(!isOnR && isBlinkOn);
     switchTimeR = 1000;
     switchTimeY = 1000;
   } else if (mode == RY_ALT_1) {
-    digitalWrite(OUT_GREEN, 0);
-    digitalWrite(OUT_YELLOW, isOnY && isBlinkOn);
-    digitalWrite(OUT_RED, !isOnY && isBlinkOn);
+    green.turnOff();
+    yellow.setOn(isOnY && isBlinkOn);
+    red.setOn(!isOnY && isBlinkOn);
     switchTimeR = 2000;
     switchTimeY = 2000;
   } else if (mode == RY_ALT_2) {
-    digitalWrite(OUT_GREEN, 0);
-    digitalWrite(OUT_YELLOW, isOnY && isBlinkOn);
-    digitalWrite(OUT_RED, isOnR && isBlinkOn);
+    green.turnOff();
+    yellow.setOn(isOnY && isBlinkOn);
+    red.setOn(isOnR && isBlinkOn);
     switchTimeR = 500;
     switchTimeY = 2000;
   }
 }
+
 

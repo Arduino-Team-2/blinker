@@ -5,19 +5,20 @@
 template<typename T>
 class Pin {
 public:
-    enum class Mode {
-        Input = INPUT,
-        Output = OUTPUT,
-        InputPullUp = INPUT_PULLUP
-    };
+  enum class Mode {
+      Input = INPUT,
+      Output = OUTPUT,
+      InputPullUp = INPUT_PULLUP
+  };
 
-    Pin(int pinId, Mode mode);
-    ~Pin() = default;
+  Pin(int pinId, Mode mode);
+  ~Pin() = default;
 
-    void setMode(Mode mode);
-    virtual T read() = 0;
-    virtual void write(T value) = 0;
+  void setMode(Mode mode);
+  int getId();
 
+  virtual T read() = 0;
+  virtual void write(T value) = 0;
 protected:
     int mId;
     Mode mMode;
@@ -26,6 +27,11 @@ protected:
 template<typename T>
 Pin<T>::Pin(int pinId, Mode mode) : mId(pinId) {
     setMode(mode);
+}
+
+template<typename T>
+inline int Pin<T>::getId() {
+  return mId;
 }
 
 template<typename T>
@@ -71,4 +77,5 @@ inline float AnalogPin::read() {
 inline void AnalogPin::write(float value) {
     analogWrite(mId, value);
 }
+
 

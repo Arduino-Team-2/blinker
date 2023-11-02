@@ -21,9 +21,6 @@ void setup() {
 
 
 
-bool isPressed = false;
-bool isChanged = false;
-
 enum LedMode {
   G_ON = 0,
   RY_SYM_1 = 1,

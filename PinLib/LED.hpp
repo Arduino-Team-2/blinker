@@ -17,7 +17,7 @@ inline bool LED::isOn() {
   return mIsOn;
 }
 
-class DigitalLED : DigitalPin, LED {
+class DigitalLED : DigitalPin, public LED {
 public:
   DigitalLED(int pinId) : DigitalPin(pinId, DigitalPin::Mode::Output) {}
   ~DigitalLED() = default;
@@ -47,7 +47,7 @@ inline void DigitalLED::setOn(bool isOn) {
   digitalWrite(getId(), isOn ? HIGH : LOW);
 }
 
-class AnalogLED : AnalogPin, LED {
+class AnalogLED : AnalogPin, public LED {
 public:
   AnalogLED(int pinId) : AnalogPin(pinId, AnalogPin::Mode::Output) {}
   ~AnalogLED() = default;

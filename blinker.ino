@@ -1,6 +1,7 @@
 #include "PinLib/Pin.hpp"
 #include "PinLib/LED.hpp"
 #include "PinLib/Button.hpp"
+#include "PinLib/Timer.hpp"
 
 #define OUT_GREEN 11
 #define OUT_YELLOW 12
@@ -10,17 +11,6 @@
 
 #define BLINK_TIME 125
 
-PushButton button(IN_BUTTON);
-DigitalLED green(OUT_GREEN);
-DigitalLED yellow(OUT_YELLOW);
-DigitalLED red(OUT_RED);
-
-void setup() {
-  Serial.begin(9600);
-}
-
-
-
 enum LedMode {
   G_ON = 0,
   RY_SYM_1 = 1,
@@ -28,70 +18,98 @@ enum LedMode {
   RY_ALT_2 = 3,
 };
 
+void redCallback();
+void yellowCallback();
+void blinkCallback();
+
+PushButton button(IN_BUTTON);
+DigitalLED green(OUT_GREEN);
+DigitalLED yellow(OUT_YELLOW);
+DigitalLED red(OUT_RED);
+
+Timer redTimer(1000000, redCallback, true);
+Timer yellowTimer(1000000, yellowCallback, true);
+Timer blinkTimer(BLINK_TIME, blinkCallback, true, true);
+
+void setup() {
+  Serial.begin(9600);
+}
+
+
+
+
 int mode = 0;
 
-unsigned long timeMs;
-unsigned long lastBlink = 0;
-unsigned long lastSwitchY = 0;
-unsigned long lastSwitchR = 0;
-unsigned long switchTimeY = 0;
-unsigned long switchTimeR = 0;
 bool isBlinkOn = true;
 bool isOnY = true;
 bool isOnR = true;
 
-void loop() {
-  timeMs = millis();
-  button.update();
+void redCallback() {
+  isOnR = !isOnR;
+}
 
-  if (button.isPressed()){
-    mode = (mode + 1) % 4;
-    lastSwitchY = 0;
-    lastSwitchR = 0;
-    lastBlink = 0;
-    isBlinkOn = true;
-    isOnY = true;
-    isOnR = true;
-  }
+void yellowCallback() {
+  isOnY = !isOnY;
+}
 
-  if (timeMs - lastSwitchY > switchTimeY) {
-    isOnY = !isOnY;
-    lastSwitchY = timeMs;
-  }
-  if (timeMs - lastSwitchR > switchTimeR) {
-    isOnR = !isOnR;
-    lastSwitchR = timeMs;
-  }
-  if (timeMs - lastBlink > BLINK_TIME) {
-    isBlinkOn = !isBlinkOn;
-    lastBlink = timeMs;
-  }
+void blinkCallback() {
+  isBlinkOn = !isBlinkOn;
+}
 
-  if (mode == G_ON) {
+void runMode1() {
+    redTimer.stop();
+    yellowTimer.stop();
     green.turnOn();
     yellow.turnOff();
     red.turnOff();
-    switchTimeR = 10000;
-    switchTimeY = 10000;
-  } else if (mode == RY_SYM_1) {
-    green.turnOff();
-    yellow.setOn(!isOnY && isBlinkOn);
-    red.setOn(!isOnR && isBlinkOn);
-    switchTimeR = 1000;
-    switchTimeY = 1000;
-  } else if (mode == RY_ALT_1) {
-    green.turnOff();
-    yellow.setOn(isOnY && isBlinkOn);
-    red.setOn(!isOnY && isBlinkOn);
-    switchTimeR = 2000;
-    switchTimeY = 2000;
-  } else if (mode == RY_ALT_2) {
+}
+
+void runMode2() {
     green.turnOff();
     yellow.setOn(isOnY && isBlinkOn);
     red.setOn(isOnR && isBlinkOn);
-    switchTimeR = 500;
-    switchTimeY = 2000;
-  }
+    redTimer.setInterval(1000);
+    yellowTimer.setInterval(1000);
 }
 
+void runMode3() {
+    green.turnOff();
+    yellow.setOn(isOnY && isBlinkOn);
+    red.setOn(!isOnY && isBlinkOn);
+    redTimer.setInterval(2000);
+    yellowTimer.setInterval(2000);
+}
 
+void runMode4() {
+    green.turnOff();
+    yellow.setOn(isOnY && isBlinkOn);
+    red.setOn(isOnR && isBlinkOn);
+    redTimer.setInterval(500);
+    yellowTimer.setInterval(2000);
+}
+
+const void (*modeFunctions[4])() = {runMode1, runMode2, runMode3, runMode4 };
+
+
+void update() {
+  button.update();
+  redTimer.update();
+  yellowTimer.update();
+  blinkTimer.update();
+}
+
+void loop() {
+  update();
+
+  if (button.isPressed()) {
+    mode = (mode + 1) % 4;
+    isBlinkOn = true;
+    isOnY = true;
+    isOnR = true;
+    redTimer.start();
+    yellowTimer.start();
+    blinkTimer.start();
+  }
+
+  modeFunctions[mode]();
+}
